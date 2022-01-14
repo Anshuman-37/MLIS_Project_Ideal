@@ -107,39 +107,25 @@ def train(x_train,y_train,x_test,y_test,epochs,alpha,eta0,p):
     return w,b,train_loss,test_loss
 
 
-# alpha=0.0001
-# eta0=0.01
-# N=len(x_train)
-# epochs=100
-# p = 2
-# w,b,train_loss,test_loss=train(x_train,y_train,x_test,y_test,epochs,alpha,eta0,p)
+# This function is to return the predicted values numpy array a
 
 def pred(w,b, X):
+    '''This function will return the predicted value in respect to the given data points '''
     N = len(X)
     predict = []
+    ## The loop to iterate over the range of the values 
     for i in range(N):
         z=np.dot(w,X[i])+b
+        # Any thing with value of sigmoid more than 0.5 will be classified as class label 1
         if sigmoid(z) > 0.5: 
             predict.append(1)
+        # Anything wiht value of sifgmoid less than 0.5 will be classified as class label 0
         else:
             predict.append(0)
+    ## Returning the array contating the predicted values 
     return np.array(predict)
 
-# print(pred(w,b,x_train))
-# y_train=y_train.reshape(pred(w,b,x_train).shape)
-# print('Train _ Accuracy',1-np.sum(y_train - pred(w,b,x_train))/len(x_train))
-# y_test=y_test.reshape(pred(w,b,x_test).shape)
-# print('Test _ Accuracy',1-np.sum(y_test  - pred(w,b,x_test))/len(x_test))
 
 
-# epochs = np.arange(1, epochs+1, 1)
-# plt.figure(figsize=(10, 5))
-# plt.plot(epochs, train_loss, label='Train Loss')
-# plt.plot(epochs, test_loss, label='Test Loss')
-# plt.title('Epoch vs Train,Test Loss')
-# plt.xlabel("Epoch_no")
-# plt.ylabel('Loss')
-# plt.legend()
-# print(100*'==')
 
 
