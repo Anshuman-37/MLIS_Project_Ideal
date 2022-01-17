@@ -3,9 +3,14 @@
 ## Author 
 ## Anshuman Singh 
 ## Group members - Anshuman Singh, Alpaslan Erdag, Yixin Fan
-## Group number - 1A 
+## Group number - 4B
 
+
+# Header File
 import numpy as np
+
+# Code Reference 
+# https://www.nbshare.io/notebook/626706996/Learn-And-Code-Confusion-Matrix-With-Python/
 
 def confusion_matrix(y_true,y_pred):
     
@@ -30,6 +35,7 @@ def confusion_matrix(y_true,y_pred):
                 false_negatives += 1
             
     cm = [[true_negatives , false_positives], [false_negatives, true_positives]]
+    
     # Converting the 2D list to 2D numpy array 
     cm = np.array(cm)
     
