@@ -11,6 +11,22 @@
 ## COS 324 – Elements of Machine Learning Princeton University
 
 
+
+# Code's Working 
+# So we will consider each of the feature important and contributing for our final output 
+# So each attribute should have some cofficient that explains about its impact on the final output 
+# So we do this by assigning each attribute a specific weight and there is baise realated to it which will add up and give us our predicition
+# So first we intialize our weights for all our attributes and bais to 0 
+# Then we have to maximize the likelihood of our values refer equation 4 in the paper mentioned above 
+# And to avoid the numeric difficulties we have take log of the equation mentioned above and it is implemented by the name loss_fun in the code
+# Now we have the loss function and we have to minimize it and to do that we are using Stochastic Gradient descent and noisy version of Gradient Descent
+# We callculate the gradient of w and bais in the terms Refer equation 25 in the paper mentioned 
+# We now have to regularize the weights refer to equation 28 in the paper mentioned 
+# And according to that we update our weight so that we will reach a value eventually where we have minimized our loss and that will give use best intercepts and bais value 
+# Finally we can use the predict function that use these weight and bais and uses sigmoid function to get classify them
+# If the value is less that 0.5 we 
+
+
 ## Header Files 
 import numpy as np
 from tqdm import tqdm
@@ -60,7 +76,7 @@ def predict(w,b, X):
     for i in range(N):
         z=np.dot(w,X[i])+b
         # Any thing with value of sig_function more than 0.5 will be classified as class label 1
-        if sig_function(z) > 0.5: 
+        if sig_function(z) >=0.5: 
             predictict.append(1)
         # Anything wiht value of sifgmoid less than 0.5 will be classified as class label 0
         else:
@@ -125,6 +141,7 @@ def train_classifier(x_train,y_train,x_test,y_test,epochs,alpha,t_rate):
         print('W intercept: {}, B intercept: {}, Train loss: {:.5f}, Test loss: {:.5f}'.format(weight, b, loss_train[i], loss_test[i]))
     
     return weight,b,loss_train,loss_test
+
 
 
 
