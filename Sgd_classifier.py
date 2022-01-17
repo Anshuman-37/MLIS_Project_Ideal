@@ -15,17 +15,6 @@
 import numpy as np
 from tqdm import tqdm
 
-def weights(dim):
-    ''' In this function, we will initialize our weights and bias according to the number of parameters that we have'''
-    # Here dimenstion refer to the number of the attributes in the data
-    w = np.zeros(shape=len(dim))
-    b = 0
-    return w,b
-
-def sig_function(z):
-    '''This function will compute the sig_function of the input'''
-    #Compute sig_function(z) and return
-    return 1/(1+np.exp(-z))
 
 def loss_fun(y_labels,y_predicticted):
     '''This function will return the log loss of the function'''
@@ -34,6 +23,19 @@ def loss_fun(y_labels,y_predicticted):
     loss = -1 * (np.sum((y_labels * np.log10(y_predicticted))+ \
                       ((1-y_labels)*np.log10(1-y_predicticted))))/len(y_labels)
     return loss
+
+def sig_function(z):
+    '''This function will compute the sig_function of the input'''
+    #Compute sig_function(z) and return
+    return 1/(1+np.exp(-z))
+
+
+def weights(dim):
+    ''' In this function, we will initialize our weights and bias according to the number of parameters that we have'''
+    # Here dimenstion refer to the number of the attributes in the data
+    w = np.zeros(shape=len(dim))
+    b = 0
+    return w,b
 
 ## As we are using gradient descent so we reach the global minimum for the convex function 
 ## We will calculate the gradient of weights and bais
@@ -68,10 +70,10 @@ def predict(w,b, X):
 
 
 
-def train_classifier(x_train,y_train,x_test,y_test,epochs,alpha,eta0,p):
+def train_classifier(x_train,y_train,x_test,y_test,epochs,alpha,t_rate):
     '''This function will apply the logistic regression'''
     # First we intialize the weights 
-    w,b = weights(x_train[0])
+    weight,b = weights(x_train[0])
 
     # This is to ensure that the loss is not same for iterations 
     # We want to quit when we reach the critical point 
@@ -97,22 +99,22 @@ def train_classifier(x_train,y_train,x_test,y_test,epochs,alpha,eta0,p):
         for j in range(part_size):
             
             # Calculating gradient of w and adding it to the existing one    
-            w = w + eta0*dw(x_train[(j+part_no)%n], y_train[(j+part_no)%n],w, b, alpha, len(x_train))
+            weight = weight + t_rate*dw(x_train[(j+part_no)%n], y_train[(j+part_no)%n],weight, b, alpha, len(x_train))
             
             #Calculating gradient of b and adding it to the existing one
-            b = b + eta0*db(x_train[(j+part_no)%n], y_train[(j+part_no)%n], w, b)
+            b = b + t_rate*db(x_train[(j+part_no)%n], y_train[(j+part_no)%n], weight, b)
         
         part_no = (part_no + part_size)%n # To updtae the new part
 
         #predicticting the traing data in comparison of the the xtrain
-        y_predict_train = np.array([sig_function(np.dot(w, x)+b) for x in x_train])
+        y_predict_train = np.array([sig_function(np.dot(weight, x)+b) for x in x_train])
         
         #predicticting the test data in comaprison of the xtest
-        y_predict_test = np.array([sig_function(np.dot(w, x)+b) for x in x_test])
+        y_predict_test = np.array([sig_function(np.dot(weight, x)+b) for x in x_test])
 
         #Calculating the loss on for training data
         loss = loss_fun(y_train,y_predict_train)
-        train_loss.append(loss)
+        loss_train.append(loss)
         
         #Calculatig the loss onfor testing data
         loss = loss_fun(y_test,y_predict_test)
@@ -120,9 +122,9 @@ def train_classifier(x_train,y_train,x_test,y_test,epochs,alpha,eta0,p):
 
         ## Printing values
         print('\n-- Epoch no(iteration no) ', i+1)
-        print('W intercept: {}, B intercept: {}, Train loss: {}, Test loss: {}'.format(w, b, train_loss[i], loss_test[i]))
+        print('W intercept: {}, B intercept: {}, Train loss: {:.5f}, Test loss: {:.5f}'.format(weight, b, loss_train[i], loss_test[i]))
     
-    return w,b,train_loss,loss_test
+    return weight,b,loss_train,loss_test
 
 
 
