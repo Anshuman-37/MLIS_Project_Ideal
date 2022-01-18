@@ -39,7 +39,21 @@ def confusion_matrix(y_true,y_pred):
     # Converting the 2D list to 2D numpy array 
     cm = np.array(cm)
     
+    # Fpr rate
     false_positive_rate  = (false_positives) / (true_negatives+false_positives)
+    
+    # Recall Rate
     recall = (true_positives) / (true_positives+false_negatives)
+    
+    #Auc score
+    AUC_score = (true_positives+true_negatives)/(true_positives+true_negatives\
+        +false_positives+false_negatives)
+    
+    # Precision 
+    precision = (true_positives)/(true_positives + true_negatives)
 
-    return cm,false_positive_rate,recall
+    # F1 score 
+    F1_score  = (2*precision*recall)/(precision+recall)
+
+    # Returning all the values 
+    return cm,false_positive_rate,recall,AUC_score,precision,F1_score
