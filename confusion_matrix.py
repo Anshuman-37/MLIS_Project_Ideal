@@ -21,20 +21,29 @@ def confusion_matrix(y_true,y_pred):
     true_positives  = 0
     true_negatives  = 0
 
+    # for true_value, predicted_value in zip(y_true, y_pred):
+    #     if predicted_value == true_value:#if the sample matches 
+    #         if predicted_value == 1:# true positves
+    #             true_positives  += 1
+    #         else: # true negaives
+    #             true_negatives  += 1
+    #     else: # Values don't match 
+    #         if predicted_value == 1:# false positives
+    #             false_positives += 1
+    #         else:
+    #             # false negatives   
+    #             false_negatives += 1
     for true_value, predicted_value in zip(y_true, y_pred):
-        if predicted_value == true_value:#if the sample is officially true
-            if predicted_value == 1:# true positves
-                true_positives  += 1
-            else: # true negaives
-                true_negatives  += 1
-        else:# false values?
-            if predicted_value == 1:# false positives
-                false_positives += 1
-            else:
-                # false negatives   
-                false_negatives += 1
+        if true_value == 1 and predicted_value == 1:
+            true_positives+=1
+        elif true_value == 0 and predicted_value == 1:
+            false_positives+=1
+        elif true_value == 0 and predicted_value == 0:
+            true_negatives+=1
+        elif true_value == 1 and predicted_value == 0:
+            false_negatives+=1
             
-    cm = [[true_negatives , false_positives], [false_negatives, true_positives]]
+    cm = [[true_positives , false_positives], [false_negatives, true_negatives]]
     
     # Converting the 2D list to 2D numpy array 
     cm = np.array(cm)
@@ -50,7 +59,7 @@ def confusion_matrix(y_true,y_pred):
         +false_positives+false_negatives)
     
     # Precision 
-    precision = (true_positives)/(true_positives + true_negatives)
+    precision = (true_positives)/(true_positives + false_positives)
 
     # F1 score 
     F1_score  = (2*precision*recall)/(precision+recall)
