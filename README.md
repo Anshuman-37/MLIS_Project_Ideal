@@ -1,21 +1,14 @@
-# MLIS_Project_Ideal 
+# MLIS Project
 
+## This is the project for Coursework of MLIS Part 1 (2021 - 22) 
 
-So we first cleaned the data, we implemented the code with SGD classifier 
+The main python notebook is in the IPython notebook name MLIS_code.ipynb.
 
+<em> To run this notebook please change the path variables accordingly </em>
 
-The official code is in the file names Main Code so please check that and use it.
-That is the official jupyter notebook that we will submit to the examiners
+### The models are named as SGD_classifier and SVM_classifier 
+### Please ensure that they are in the same directory where the python notebook is situated
 
+<em> The output of the code keep changing between the range .93 - .97 </em>
 
-## TODO 
-
-First add more conclusions to the code the insights and stuff to it, then we need to implement the code with SVM kernel 
-Report still left
-
-
-## Milestones  
-* Cleaned data 
-* Implemented SGD 
-* Created a code template
-* Create confussin matrix code 
+If you want to make some changes to the model please restart the kernel and run all the cells with updated values 
