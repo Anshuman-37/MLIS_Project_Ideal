@@ -99,10 +99,12 @@ class OurSVM:
             idx, = np.nonzero(self.alphas > 1E-3)
             self.b = np.mean((1.0 - np.sum(self.K[idx] * self.alphas, axis=1)) * self.y[idx])
             support_vectors = X[idx, :]
-       
+
+    # Returns the ojective back to predict
     def objective(self, X):
         return np.sum(self.alphas * self.y * self.kernel(X, self.X), axis=1) + self.b
 
+    #Predict function
     def predict(self, X):
         return (np.sign(self.objective(X)) + self.bias) // 2
 
