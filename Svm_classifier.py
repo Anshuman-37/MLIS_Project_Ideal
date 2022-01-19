@@ -77,18 +77,24 @@ class OurSVM:
             # For the number of data points
             for alphaX in range(0,m):
 
+              #
               alphaY = np.random.randint(0,m)
-
+              # Refer to equation number (5c) in the paper mentioned
+              # q = (K[x,x] , K[y,y]
+              #      K[x,y] , K[x,y])
               Q = self.K[[[alphaX, alphaX], [alphaY, alphaY]], [[alphaX, alphaY], [alphaX, alphaY]]]
 
+              # Refer to equation (5a) in the paper mentioned
               v0 = self.alphas[[alphaX, alphaY]]
 
+              # Refer equation (5b) in the paper mentioned
               k0 = 1 - np.sum(self.alphas * self.K[[alphaX, alphaY]], axis=1)
 
               u = np.array([-self.y[alphaY], self.y[alphaX]])
 
               t_max = np.dot(k0, u) / (np.dot(np.dot(Q, u), u) + 1E-3)
 
+            #Refer to the equation (6a) in the paper mentioned
             self.alphas[[alphaX, alphaY]] = v0 + u * self.limitation(t_max, v0, u)
             idx, = np.nonzero(self.alphas > 1E-3)
             self.b = np.mean((1.0 - np.sum(self.K[idx] * self.alphas, axis=1)) * self.y[idx])
