@@ -50,22 +50,31 @@ import numpy as np
 
 class OurSVM:
     def __init__(self, kernel=None, C=10.0,bias=1, gamma=1,sigma=0.01):
-        self.kernel = {'rbf'   : lambda x,y: np.exp(-gamma*np.sum((y - x[:,np.newaxis])**2, axis=-1)),
-                     'gauss' : lambda x,y: np.exp(- (np.linalg.norm(x[:, np.newaxis] - y[np.newaxis, :], 2, axis=2) ** 2) / (2 * sigma ** 2)),
-                     'linear': lambda x,y: np.dot(x, y.T)}[kernel]
+        # Kernel functions lambda operations to update kernel trick
+        self.kernel = {'rbf'   : lambda x,y: np.exp(-gamma*np.sum((y - x[:,np.newaxis])**2, axis=-1)),\
+                     'gauss' : lambda x,y: np.exp(- (np.linalg.norm(x[:, np.newaxis] - y[np.newaxis, :], 2, axis=2) ** 2) / (2 * sigma ** 2)),\
+                     'linear': lambda x,y: np.dot(x, y.T)\
+                    }[kernel]
       
         self.C = C
         self.bias= bias
 
     # X for data y for labels
     def fit(self, X, y):
+        # assigning the given features and the prediction labels
         self.X = X
         self.y = y*2 -1
+        # Dimenensions of the given data
         m , l = X.shape
+
+        #
         self.alphas = np.zeros((m))
+        # Kernel trick
         self.K = self.kernel(self.X, self.X).T * self.y[:,np.newaxis] * self.y
 
+        # It defines the number of epochs
         for i in range(10):
+            # For the number of data points
             for alphaX in range(0,m):
 
               alphaY = np.random.randint(0,m)
