@@ -2,58 +2,11 @@
 import numpy as np
 
 
-# ## SVM class
-# class SVM:
-#   def __init__(self, kernel=None, C=10.0, max_iter=50, gamma=1):
-    
-#     self.kernel = {'rbf'   : lambda x,y: np.exp(-gamma*np.sum((y - x[:,np.newaxis])**2, axis=-1)),
-#                    'linear': lambda x,y: np.dot(x, y.T)}[kernel]
-#     self.C = C
-#     self.max_iter = max_iter
-
-#   def restrict_to_square(self, t, v0, u):
-#     t = (np.clip(v0 + t*u, 0, self.C) - v0)[1]/u[1]
-#     return (np.clip(v0 + t*u, 0, self.C) - v0)[0]/u[0]
-
-#   def fit(self, X, y):
-#     self.X = X
-#     self.y = y * 2 - 1
-#     self.alphas = np.zeros_like(self.y, dtype=float)  # ??Weights used for updating initially we use 0 for all entries
-#     self.K = self.kernel(self.X, self.X) * self.y[:,np.newaxis] * self.y
-    
-#     for _ in range(self.max_iter):
-#       for idxM in range(len(self.alphas)):
-#         idxL = np.random.randint(0, len(self.alphas))
-#         Q = self.K[[[idxM, idxM], [idxL, idxL]], [[idxM, idxL], [idxM, idxL]]]
-#         v0 = self.alphas[[idxM, idxL]]
-#         k0 = 1 - np.sum(self.alphas * self.K[[idxM, idxL]], axis=1)
-#         u = np.array([-self.y[idxL], self.y[idxM]])
-#         t_max = np.dot(k0, u) / (np.dot(np.dot(Q, u), u) + 1E-15)
-#         self.alphas[[idxM, idxL]] = v0 + u * self.restrict_to_square(t_max, v0, u)
-    
-#     idx, = np.nonzero(self.alphas > 1E-15)
-#     self.b = np.mean((1.0 - np.sum(self.K[idx] * self.alphas, axis=1)) * self.y[idx])
-  
-#   def decision_function(self, X):
-#     return np.sum(self.kernel(X, self.X) * self.y * self.alphas, axis=1) + self.b
-
-#   def predict(self, X):
-#     return (np.sign(self.decision_function(X)) + 1) // 2
-
-
-# def gaussian_kernel(x, z, sigma):
-#     n = x.shape[0]
-#     m = z.shape[0]
-#     xx = np.dot(np.sum(np.power(x, 2), 1).reshape(n, 1), np.ones((1, m)))
-#     zz = np.dot(np.sum(np.power(z, 2), 1).reshape(m, 1), np.ones((1, n)))     
-#     return np.exp(-(xx + zz.T - 2 * np.dot(x, z.T)) / (2 * sigma ** 2))
-
 class OurSVM:
     def __init__(self, kernel=None, C=10.0,bias=1, gamma=1,sigma=0.01):
         # Kernel functions lambda operations to update kernel trick
-        self.kernel = {'rbf'   : lambda x,y: np.exp(-gamma*np.sum((y - x[:,np.newaxis])**2, axis=-1)),\
-                     'gauss' : lambda x,y: np.exp(- (np.linalg.norm(x[:, np.newaxis] - y[np.newaxis, :], 2, axis=2) ** 2) / (2 * sigma ** 2)),\
-                     'linear': lambda x,y: np.dot(x, y.T)\
+        self.kernel = {'rbf'   : lambda x,y: np.exp(-gamma*np.sum((y - x[:,np.newaxis])**2, axis=-1)),
+                     'linear': lambda x,y: np.dot(x, y.T)
                     }[kernel]
       
         self.C = C
@@ -65,52 +18,62 @@ class OurSVM:
         self.X = X
         self.y = y*2 -1
         # Dimenensions of the given data
+        # to reach all samples we`ll use these in for loop
         m , l = X.shape
-
-        #
+        
         self.alphas = np.zeros((m))
-        # Kernel trick
+        # Gram matrix/kernel
         self.K = self.kernel(self.X, self.X).T * self.y[:,np.newaxis] * self.y
 
-        # It defines the number of epochs
+        # It(10) defines the number of epochs
         for i in range(10):
-            # For the number of data points
-            for alphaX in range(0,m):
+            # starting with initializing of alphaA and alphaB
+            for alphaA in range(0,m):
+                #randomm alpha values selected
+              alphaB = np.random.randint(0,m)
+              
+              #the following terms are obtained by breaking down the SMO objective function 
+              #alphaKernel,alphaVector,k_value,labelVector,opt
+              
+              # This variable is is a kernel matrix with initial alpha values
+              alphaKernel = self.K[[[alphaA, alphaA], [alphaB, alphaB]], [[alphaA, alphaB], [alphaA, alphaB]]]
+              #initial alpha vector
+              alphaVector = self.alphas[[alphaA, alphaB]]
 
-              #
-              alphaY = np.random.randint(0,m)
-              # Refer to equation number (5c) in the paper mentioned
-              # q = (K[x,x] , K[y,y]
-              #      K[x,y] , K[x,y])
-              Q = self.K[[[alphaX, alphaX], [alphaY, alphaY]], [[alphaX, alphaY], [alphaX, alphaY]]]
+              k_value = 1 - np.sum(self.alphas * self.K[[alphaA, alphaB]], axis=1)
+              #labels corresponding to the initial alphas
+              labelVector = np.array([-self.y[alphaB], self.y[alphaA]])
+              
+              #derivative of quadratic function wrt t ---- gives us optimun new alpha values
+              opt = np.dot(k_value, labelVector) / (np.dot(np.dot(alphaKernel, labelVector), labelVector) + 1E-3)
 
-              # Refer to equation (5a) in the paper mentioned
-              v0 = self.alphas[[alphaX, alphaY]]
-
-              # Refer equation (5b) in the paper mentioned
-              k0 = 1 - np.sum(self.alphas * self.K[[alphaX, alphaY]], axis=1)
-
-              u = np.array([-self.y[alphaY], self.y[alphaX]])
-
-              t_max = np.dot(k0, u) / (np.dot(np.dot(Q, u), u) + 1E-3)
-
-            #Refer to the equation (6a) in the paper mentioned
-            self.alphas[[alphaX, alphaY]] = v0 + u * self.limitation(t_max, v0, u)
+           #updated alphas without clip
+            self.alphas[[alphaA, alphaB]] = alphaVector + labelVector * self.clip(opt, alphaVector, labelVector)
             idx, = np.nonzero(self.alphas > 1E-3)
+            #updated b values
             self.b = np.mean((1.0 - np.sum(self.K[idx] * self.alphas, axis=1)) * self.y[idx])
             support_vectors = X[idx, :]
 
-    # Returns the ojective back to predict
+    # Objective Function : ∑ [y*alpha* (kernelX*T*x)] - b
     def objective(self, X):
         return np.sum(self.alphas * self.y * self.kernel(X, self.X), axis=1) + self.b
 
-    #Predict function
+
+
+    #Predict function : Prediction is wT*x-b.--- w= y*alpha* kernelX
+    # May treat -b as one more coefficient in w, may take sign of this value
     def predict(self, X):
         return (np.sign(self.objective(X)) + self.bias) // 2
+    
+    
+# Limitation : This function purpuse is to provide this  0 <alpha< C
+#For soft margin SVM we have to “clip” size of any change because 
+#of addional constraint that every α must be between 0 and C
+    def clip(self, t, alphaVector, labelVector):   
+        t = (np.clip(alphaVector + t*labelVector, 0, self.C) - alphaVector)[1]/labelVector[1]
+        return (np.clip(alphaVector + t*labelVector, 0, self.C) - alphaVector)[0]/labelVector[0]
 
-    def limitation(self, t, v0, u):   # this function purpuse is to provide this  0 <alpha< C
-        t = (np.clip(v0 + t*u, 0, self.C) - v0)[1]/u[1]
-        return (np.clip(v0 + t*u, 0, self.C) - v0)[0]/u[0]
 
+    
 
     
