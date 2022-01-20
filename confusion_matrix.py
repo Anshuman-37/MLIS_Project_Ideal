@@ -47,7 +47,13 @@ def confusion_matrix(y_true,y_pred):
     
     # Converting the 2D list to 2D numpy array 
     cm = np.array(cm)
-    
+
+    ## To avoid division by zero error we attach a small gradient  error = 0/(something)
+    if(false_positives == 0):
+        false_positives = 0.01
+    if(false_negatives == 0):
+        false_positives = 0.01
+
     # Fpr rate
     false_positive_rate  = (false_positives) / (true_negatives+false_positives)
     
