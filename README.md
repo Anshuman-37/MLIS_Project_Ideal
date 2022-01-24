@@ -13,4 +13,6 @@ The main python notebook is in the IPython notebook name MLIS_code.ipynb.
 
 If you want to make some changes to the model please restart the kernel and run all the cells with updated values 
 
-The Rbf kernel gives varied answers please run it again its accuracy should be more than 90%
+The Rbf kernel gives varied answers please run it again its accuracy should be more than 90%.
+Try running it, again!!! 
+
